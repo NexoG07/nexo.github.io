@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyFun Cloud Games - Nexo</title>
+  
+  <!-- Zwingend erforderliche Skripte für den X-Frame-Bypass -->
+  <script src="https://unpkg.com"></script>
+  <script type="module" src="https://unpkg.com"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: #080911;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+    }
+    #top-bar {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(15, 17, 28, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(139, 92, 246, 0.25);
+      transition: opacity 0.3s ease;
+    }
+    #top-bar.faded {
+      opacity: 0.15;
+    }
+    #top-bar.faded:hover {
+      opacity: 1;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #c4b5fd;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #8b5cf6;
+      box-shadow: 0 0 8px #a855f7;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      border-color: #8b5cf6;
+      color: #fff;
+    }
+    .btn-active {
+      background: #7c3aed;
+      border-color: #8b5cf6;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
+    #frame-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="top-bar">
+    <div class="badge">
+      <span class="dot"></span>
+      <span>EasyFun Cloud</span>
+    </div>
+    <button class="btn btn-active" id="btn-direct" onclick="setMode('direct')" title="Direkte EasyFun Cloud-Verbindung mit X-Frame-Bypass">
+      ⚡ Direkt-Modus
+    </button>
+    <button class="btn" id="btn-proxy" onclick="setMode('proxy')" title="Server-Proxy Verbindung">
+      🛡️ Nexo-Proxy
+    </button>
+    <a class="btn" href="https://easyfun.gg" target="_blank" rel="noopener noreferrer" title="In neuem Vollbild-Tab öffnen">
+      ↗ Neuer Tab
+    </a>
+  </div>
+
+  <div id="frame-container">
+    <!-- Das Haupt-Iframe lädt standardmässig mit dem x-frame-bypass Schutz -->
+    <iframe
+      id="main-iframe"
+      is="x-frame-bypass"
+      src="https://easyfun.gg"
+      allow="accelerometer; autoplay; clipboard-read; clipboard-write; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; microphone; camera; picture-in-picture; screen-wake-lock; web-share"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <script>
+    const container = document.getElementById('frame-container');
+    const btnDirect = document.getElementById('btn-direct');
+    const btnProxy = document.getElementById('btn-proxy');
+
+    function setMode(mode) {
+      container.innerHTML = '';
+      const frame = document.createElement('iframe');
+      frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-read; clipboard-write; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; microphone; camera; picture-in-picture; screen-wake-lock; web-share');
+      frame.setAttribute('allowfullscreen', 'true');
+
+      if (mode === 'direct') {
+        btnDirect.className = 'btn btn-active';
+        btnProxy.className = 'btn';
+        // Fügt das x-frame-bypass Attribut dem neu erzeugten Iframe hinzu
+        frame.setAttribute('is', 'x-frame-bypass');
+        frame.setAttribute('src', 'https://easyfun.gg');
+      } else {
+        btnDirect.className = 'btn';
+        btnProxy.className = 'btn btn-active';
+        frame.setAttribute('src', '/api/cloud-proxy?url=https://easyfun.gg');
+      }
+      container.appendChild(frame);
+    }
+
+    // Lässt das Menü nach 4 Sekunden transparent werden
+    setTimeout(() => {
+      const bar = document.getElementById('top-bar');
+      if (bar) bar.classList.add('faded');
+    }, 4000);
+  </script>
+</body>
+</html>

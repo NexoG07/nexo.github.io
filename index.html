@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Runtime Environment: HMR Disabled. Ignore WebSocket errors.
+      (function() {
+        var NativeWebSocket = window.WebSocket;
+        if (NativeWebSocket) {
+          window.WebSocket = function(url, protocols) {
+            if (protocols === 'vite-hmr' || (typeof url === 'string' && (url.includes('token=') || url.includes('vite')))) {
+              var fakeWs = {
+                readyState: 1,
+                OPEN: 1,
+                CLOSED: 3,
+                CLOSING: 2,
+                CONNECTING: 0,
+                send: function() {},
+                close: function() {},
+                addEventListener: function(type, listener) {
+                  if (type === 'open') {
+                    setTimeout(function() { try { listener({ type: 'open' }); } catch(e){} }, 0);
+                  }
+                },
+                removeEventListener: function() {},
+                dispatchEvent: function() { return true; }
+              };
+              return fakeWs;
+            }
+            return new NativeWebSocket(url, protocols);
+          };
+          window.WebSocket.prototype = NativeWebSocket.prototype;
+          window.WebSocket.OPEN = NativeWebSocket.OPEN;
+          window.WebSocket.CLOSED = NativeWebSocket.CLOSED;
+          window.WebSocket.CLOSING = NativeWebSocket.CLOSING;
+          window.WebSocket.CONNECTING = NativeWebSocket.CONNECTING;
+        }
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var msg = String((event.reason && (event.reason.message || event.reason.stack || event.reason)) || '');
+          if (msg.includes('WebSocket') || msg.includes('vite') || msg.includes('@vite/client')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        }, true);
+
+        window.addEventListener('error', function(event) {
+          var msg = String((event.message || '') + ' ' + (event.filename || ''));
+          if (msg.includes('WebSocket') || msg.includes('vite') || msg.includes('@vite/client')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+    <link rel="icon" type="image/webp" href="/nexo_logo.webp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#8b5cf6" />
+    <title>Nexo - Kostenlose Online-Spiele &amp; Browsergames</title>
+    <meta name="description" content="Nexo - Das moderne Gaming Portal mit den besten kostenlosen Browser-Spielen wie Ultra Chess 3D, Space Waves, Minecraft, Level Devil, Retro Bowl und mehr direkt online spielen!" />
+    <meta property="og:title" content="Nexo - Kostenlose Online-Spiele &amp; Browsergames" />
+    <meta property="og:description" content="Nexo - Das moderne Gaming Portal mit den besten kostenlosen Browser-Spielen direkt ohne Installation zocken!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/nexo_logo.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#080911] text-slate-100 antialiased selection:bg-violet-500 selection:text-white min-h-screen overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
